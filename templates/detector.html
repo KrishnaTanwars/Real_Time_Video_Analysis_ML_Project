@@ -1,0 +1,38 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<div class="detector-shell" data-detector-mode="{{ detector_mode }}">
+    <h3>{{ detector_title }}</h3>
+    <p class="detector-subtitle">Browser camera mode for cloud deployment compatibility.</p>
+
+    <div class="detector-controls">
+        <button type="button" data-action="start">Start Camera</button>
+        <button type="button" data-action="stop" disabled>Stop Camera</button>
+
+        <label>
+            Camera
+            <select data-role="camera"></select>
+        </label>
+
+        <label>
+            FPS
+            <input type="range" data-role="fps" min="2" max="15" step="1" value="6">
+        </label>
+
+        <span data-role="fps-value">6 fps</span>
+    </div>
+
+    <div class="detector-stage">
+        <video data-role="video" autoplay playsinline muted></video>
+        <canvas data-role="canvas" width="960" height="540"></canvas>
+    </div>
+
+    <div class="detector-status">
+        <span data-role="status">Idle. Click Start Camera.</span>
+        <span data-role="latency"></span>
+        <span data-role="meta"></span>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/browser_detection.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,15 @@
+﻿__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.venv/
+venv/
+.git/
+.gitignore
+Presentation.pdf
+*.png
+*.jpg
+python_Scripts/yolov3.weights
+!static/assets/*.png
+!static/assets/*.jpg

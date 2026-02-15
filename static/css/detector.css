@@ -1,0 +1,84 @@
+﻿.detector-shell {
+  width: min(1080px, 95vw);
+  margin: 0 auto;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(18, 18, 18, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(4px);
+}
+
+.detector-shell h3 {
+  margin-bottom: 8px;
+}
+
+.detector-subtitle {
+  margin-bottom: 14px;
+  color: #c4d4ff;
+}
+
+.detector-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.detector-controls button,
+.detector-controls select,
+.detector-controls input {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #0f152b;
+  color: #fff;
+  padding: 8px 10px;
+}
+
+.detector-controls button {
+  cursor: pointer;
+  background: linear-gradient(135deg, #0078ff, #00a1d6);
+  border: none;
+  font-weight: 600;
+}
+
+.detector-controls button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.detector-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detector-stage {
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.detector-stage video {
+  display: none;
+}
+
+.detector-stage canvas {
+  width: min(960px, 92vw);
+  max-height: 72vh;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #050505;
+}
+
+.detector-status {
+  margin-top: 12px;
+  min-height: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  color: #d8f3ff;
+}

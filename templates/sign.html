@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <br>
+    <h3>Sign Language Detection</h3>
+    <br>
+    <img src="{{ url_for('sign_video_feed') }}" class="video_feed_emotion" alt="Live Video Feed">
+</div>
+{% endblock %}
