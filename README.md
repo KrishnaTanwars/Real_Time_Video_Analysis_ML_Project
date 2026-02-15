@@ -121,7 +121,7 @@ Outputs:
 3. Render will read `render.yaml` and deploy automatically.
 
 Notes:
-- The build step auto-downloads `python_Scripts/yolov3.weights` if it is missing.
+- The build step auto-downloads `python_Scripts/yolov3.weights` using `scripts/download_yolo_weights.py`.
 - Start command uses `gunicorn` with `PORT` binding.
 
 ### Option B: Docker Platforms (Hugging Face Spaces / Railway / Fly.io)
@@ -136,7 +136,7 @@ docker run -p 7860:7860 realtime-video-analysis
 
 Notes:
 - Docker image installs required system libs for OpenCV.
-- Docker build also auto-downloads YOLO weights if needed.
+- Docker build also auto-downloads YOLO weights via `scripts/download_yolo_weights.py`.
 
 ## Project Structure
 

@@ -15,8 +15,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . /app/
 
-RUN test -f python_Scripts/yolov3.weights || \
-    curl -L https://pjreddie.com/media/files/yolov3.weights -o python_Scripts/yolov3.weights
+RUN python scripts/download_yolo_weights.py
 
 EXPOSE 7860
 CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:${PORT:-7860} --workers 1 --threads 4 --timeout 180"]

@@ -5,7 +5,7 @@
     plan: free
     buildCommand: >-
       pip install -r requirements.txt &&
-      python -c "import os,urllib.request; p='python_Scripts/yolov3.weights'; os.makedirs('python_Scripts', exist_ok=True); urllib.request.urlretrieve('https://pjreddie.com/media/files/yolov3.weights', p) if not os.path.exists(p) else None"
+      python scripts/download_yolo_weights.py
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 180
     envVars:
       - key: PYTHON_VERSION

@@ -27,6 +27,8 @@ env/
 Lib/
 Scripts/
 pyvenv.cfg
+!scripts/
+!scripts/*.py
 
 # IDE
 .idea/
