@@ -15,7 +15,5 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . /app/
 
-RUN python scripts/download_yolo_weights.py
-
 EXPOSE 7860
 CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:${PORT:-7860} --workers 1 --threads 4 --timeout 180"]

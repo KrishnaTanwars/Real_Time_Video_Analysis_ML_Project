@@ -3,9 +3,7 @@
     name: realtime-video-analysis
     runtime: python
     plan: free
-    buildCommand: >-
-      pip install -r requirements.txt &&
-      python scripts/download_yolo_weights.py
+    buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 180
     envVars:
       - key: PYTHON_VERSION
