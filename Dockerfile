@@ -15,5 +15,12 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . /app/
 
+# Create model directory
+RUN mkdir -p python_Scripts
+
+# Download YOLO weights from Google Drive
+RUN curl -L -o python_Scripts/yolov3.weights \
+    "https://drive.google.com/uc?export=download&id=1CueninL7gOQg-oHMIddHRE6VHd53PjT7"
+
 EXPOSE 7860
 CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:${PORT:-7860} --workers 1 --threads 4 --timeout 180"]
