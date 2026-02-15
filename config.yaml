@@ -7,37 +7,41 @@ tracking:
   max_missed_frames: 12
 
 yolo:
-  default_profile: balanced
+  default_profile: fast
   profiles:
     fast:
       input_size: 416
-      confidence: 0.5
-      nms_threshold: 0.45
+      confidence: 0.25
+      nms_threshold: 0.40
     balanced:
-      input_size: 544
-      confidence: 0.42
-      nms_threshold: 0.45
+      input_size: 416
+      confidence: 0.22
+      nms_threshold: 0.40
     accurate:
-      input_size: 608
-      confidence: 0.35
-      nms_threshold: 0.45
+      input_size: 416
+      confidence: 0.20
+      nms_threshold: 0.40
 
 modes:
   object:
-    default_profile: balanced
-    min_area_ratio: 0.0006
+    default_profile: fast
+    min_area_ratio: 0.0003
     count_ema_alpha: 0.35
+
   human:
-    default_profile: balanced
-    min_area_ratio: 0.0008
-    count_ema_alpha: 0.3
+    default_profile: fast
+    min_area_ratio: 0.0003
+    count_ema_alpha: 0.30
+
   vehicle:
-    default_profile: balanced
-    min_area_ratio: 0.0012
+    default_profile: fast
+    min_area_ratio: 0.0003
     count_ema_alpha: 0.35
+
   emotion:
     history_size: 10
     top_k: 3
+
   movement:
     history: 700
     var_threshold: 30

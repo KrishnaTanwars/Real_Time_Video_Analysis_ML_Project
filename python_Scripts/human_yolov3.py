@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Load YOLO
-net = cv2.dnn.readNet("python_Scripts\\yolov3.weights", "python_Scripts\\yolov3.cfg")  # Path to YOLO weights and config file
+net = cv2.dnn.readNet("python_Scripts/yolov3-tiny.weights", "python_Scripts/yolov3-tiny.cfg")
 layer_names = net.getLayerNames()
 output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 
@@ -44,7 +44,7 @@ while True:
             class_id = np.argmax(scores)
             confidence = scores[class_id]
 
-            if confidence > 0.5 and class_id == 0:  # 0 corresponds to 'person' class in COCO dataset
+            if confidence > 0.25 and class_id == 0:
                 # Get the bounding box
                 center_x = int(detection[0] * width)
                 center_y = int(detection[1] * height)
@@ -60,7 +60,7 @@ while True:
                 class_ids.append(class_id)
 
     # Apply non-maxima suppression to eliminate redundant overlapping boxes
-    indices = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+    indices = cv2.dnn.NMSBoxes(boxes, confidences, 0.25, 0.4)
 
     # Draw rectangles around detected humans
     if len(indices) > 0:

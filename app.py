@@ -35,6 +35,8 @@ YOLO_CFG = os.path.join(MODEL_DIR, "yolov3-tiny.cfg")
 COCO_NAMES = os.path.join(MODEL_DIR, "coco.names")
 CONFIG_PATH = "config.yaml"
 
+
+
 DEFAULT_CONFIG: Dict[str, Any] = {
     "runtime": {
         "client_state_ttl_seconds": 300,
