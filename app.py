@@ -28,8 +28,9 @@ app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
 user_logged_in = True
 
 MODEL_DIR = "python_Scripts"
-YOLO_WEIGHTS = os.path.join(MODEL_DIR, "yolov3.weights")
-YOLO_CFG = os.path.join(MODEL_DIR, "yolov3.cfg")
+YOLO_WEIGHTS = os.path.join(MODEL_DIR, "yolov3-tiny.weights")
+YOLO_CFG = os.path.join(MODEL_DIR, "yolov3-tiny.cfg")
+
 COCO_NAMES = os.path.join(MODEL_DIR, "coco.names")
 CONFIG_PATH = "config.yaml"
 
