@@ -1,0 +1,45 @@
+﻿runtime:
+  client_state_ttl_seconds: 300
+  jpeg_quality: 72
+
+tracking:
+  max_distance: 85
+  max_missed_frames: 12
+
+yolo:
+  default_profile: balanced
+  profiles:
+    fast:
+      input_size: 416
+      confidence: 0.5
+      nms_threshold: 0.45
+    balanced:
+      input_size: 544
+      confidence: 0.42
+      nms_threshold: 0.45
+    accurate:
+      input_size: 608
+      confidence: 0.35
+      nms_threshold: 0.45
+
+modes:
+  object:
+    default_profile: balanced
+    min_area_ratio: 0.0006
+    count_ema_alpha: 0.35
+  human:
+    default_profile: balanced
+    min_area_ratio: 0.0008
+    count_ema_alpha: 0.3
+  vehicle:
+    default_profile: balanced
+    min_area_ratio: 0.0012
+    count_ema_alpha: 0.35
+  emotion:
+    history_size: 10
+    top_k: 3
+  movement:
+    history: 700
+    var_threshold: 30
+    warmup_frames: 25
+    min_area_ratio: 0.0025

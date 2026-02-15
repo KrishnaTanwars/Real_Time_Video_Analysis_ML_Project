@@ -14,10 +14,12 @@
   const cameraSelect = root.querySelector('[data-role="camera"]');
   const fpsInput = root.querySelector('[data-role="fps"]');
   const fpsValue = root.querySelector('[data-role="fps-value"]');
+  const profileSelect = root.querySelector('[data-role="profile"]');
 
   const statusEl = root.querySelector('[data-role="status"]');
   const latencyEl = root.querySelector('[data-role="latency"]');
   const metaEl = root.querySelector('[data-role="meta"]');
+  const serverMetricsEl = root.querySelector('[data-role="server-metrics"]');
 
   const captureCanvas = document.createElement("canvas");
   const captureCtx = captureCanvas.getContext("2d");
@@ -43,6 +45,7 @@
   let inFlight = false;
   let currentFps = Number(fpsInput.value || 6);
   let consecutiveFailures = 0;
+  let metricsTimerId = null;
 
   function ensureClientId() {
     const key = "detector_client_id";
@@ -74,6 +77,32 @@
     startButton.disabled = running;
     stopButton.disabled = !running;
     cameraSelect.disabled = running;
+    if (profileSelect) {
+      profileSelect.disabled = running;
+    }
+  }
+
+  async function refreshServerMetrics() {
+    if (!serverMetricsEl) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/metrics");
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) {
+        return;
+      }
+
+      const modeMetrics = payload.metrics?.modes?.[mode];
+      if (!modeMetrics) {
+        return;
+      }
+
+      serverMetricsEl.textContent = `Server stats -> requests: ${modeMetrics.requests}, avg latency: ${modeMetrics.avg_latency_ms} ms, errors: ${modeMetrics.errors}`;
+    } catch (error) {
+      serverMetricsEl.textContent = "";
+    }
   }
 
   async function listCameras() {
@@ -151,6 +180,11 @@
     inFlight = false;
     applyButtonState(false);
     setStatus("Camera stopped");
+
+    if (metricsTimerId) {
+      window.clearInterval(metricsTimerId);
+      metricsTimerId = null;
+    }
   }
 
   async function startCamera() {
@@ -169,6 +203,8 @@
       setStatus("Camera running");
       consecutiveFailures = 0;
       startLoop();
+      refreshServerMetrics();
+      metricsTimerId = window.setInterval(refreshServerMetrics, 4000);
 
       await listCameras();
     } catch (error) {
@@ -200,6 +236,7 @@
         },
         body: JSON.stringify({
           client_id: clientId,
+          profile: profileSelect ? profileSelect.value : "balanced",
           frame: frameDataUrl,
         }),
       });
@@ -248,6 +285,12 @@
   });
 
   fpsInput.addEventListener("input", updateFps);
+
+  if (profileSelect) {
+    profileSelect.addEventListener("change", function () {
+      setStatus(`Model profile: ${profileSelect.value}`);
+    });
+  }
 
   window.addEventListener("beforeunload", stopCamera);
 

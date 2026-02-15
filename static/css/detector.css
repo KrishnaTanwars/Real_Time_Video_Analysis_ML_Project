@@ -54,6 +54,16 @@
   gap: 8px;
 }
 
+.benchmark-link {
+  color: #cbe7ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.benchmark-link:hover {
+  text-decoration: underline;
+}
+
 .detector-stage {
   width: 100%;
   display: grid;
@@ -81,4 +91,11 @@
   justify-content: center;
   gap: 14px;
   color: #d8f3ff;
+}
+
+.detector-server-metrics {
+  margin-top: 8px;
+  font-size: 0.88rem;
+  color: #b8e5ff;
+  text-align: center;
 }

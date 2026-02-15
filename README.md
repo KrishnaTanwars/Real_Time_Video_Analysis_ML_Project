@@ -11,6 +11,10 @@ A comprehensive real-time video analysis system that can perform multiple comput
 - Motion Detection
 - Real-time Video Processing
 - Web-based Interface
+- Config-driven model profiles (`fast`, `balanced`, `accurate`)
+- Tracking IDs and unique counts for human/vehicle modes
+- Runtime benchmark metrics API (`/api/metrics`)
+- Offline evaluation pipeline (`evaluate.py`)
 
 ## Prerequisites
 
@@ -57,6 +61,15 @@ python app.py
    - Vehicle Detection
    - Motion Detection
 
+4. Optional benchmark dashboard:
+   - Open `http://localhost:5000/benchmark`
+
+5. API endpoints:
+   - `GET /api/health`
+   - `GET /api/config`
+   - `GET /api/metrics`
+   - `POST /api/detect/<mode>` with JSON `{ "client_id": "...", "profile": "balanced", "frame": "data:image/jpeg;base64,..." }`
+
 ## Browser Camera (Deployment-Ready)
 
 This project now supports browser-based camera inference for cloud deployments.
@@ -71,6 +84,33 @@ This project now supports browser-based camera inference for cloud deployments.
 - Backend returns annotated frame images (`data:image/jpeg;base64,...`) and metadata.
 
 This avoids dependency on server-side webcam (`cv2.VideoCapture(0)`) for deployed apps.
+
+## Evaluation Pipeline
+
+Run offline model evaluation on annotated images:
+
+```bash
+python evaluate.py --mode object --annotations dataset/annotations.json --images-dir dataset/images --profile balanced --iou-threshold 0.5 --output-dir results
+```
+
+Expected annotation format (`dataset/annotations.json`):
+
+```json
+{
+  "images": [
+    {
+      "file": "image1.jpg",
+      "annotations": [
+        {"label": "person", "bbox": [100, 120, 80, 160]}
+      ]
+    }
+  ]
+}
+```
+
+Outputs:
+- `results/metrics_<mode>.json`
+- `results/confusion_<mode>.csv`
 
 ## Deploy (Free)
 

@@ -1,0 +1,61 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<div class="detector-shell">
+    <h3>Runtime Benchmark Dashboard</h3>
+    <p class="detector-subtitle">Live inference statistics by mode.</p>
+
+    <div class="detector-controls">
+        <button type="button" id="refresh-metrics">Refresh Metrics</button>
+    </div>
+
+    <div id="benchmark-output" class="detector-server-metrics">Loading...</div>
+</div>
+
+<script>
+(async function () {
+  const output = document.getElementById('benchmark-output');
+  const refreshBtn = document.getElementById('refresh-metrics');
+
+  async function loadMetrics() {
+    output.textContent = 'Loading...';
+    try {
+      const response = await fetch('/api/metrics');
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || `HTTP ${response.status}`);
+      }
+
+      const metrics = payload.metrics || {};
+      const modes = metrics.modes || {};
+
+      const rows = Object.keys(modes).map((mode) => {
+        const m = modes[mode] || {};
+        return `<tr><td>${mode}</td><td>${m.requests ?? 0}</td><td>${m.errors ?? 0}</td><td>${m.avg_latency_ms ?? 0}</td><td>${m.last_latency_ms ?? 0}</td></tr>`;
+      }).join('');
+
+      output.innerHTML = `
+        <div>Uptime: ${metrics.uptime_seconds ?? 0}s</div>
+        <table style="margin: 10px auto; border-collapse: collapse; min-width: 620px; color: #fff;">
+          <thead>
+            <tr>
+              <th style="padding: 8px; border: 1px solid #888;">Mode</th>
+              <th style="padding: 8px; border: 1px solid #888;">Requests</th>
+              <th style="padding: 8px; border: 1px solid #888;">Errors</th>
+              <th style="padding: 8px; border: 1px solid #888;">Avg Latency (ms)</th>
+              <th style="padding: 8px; border: 1px solid #888;">Last Latency (ms)</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    } catch (error) {
+      output.textContent = `Failed to load metrics: ${error.message || error}`;
+    }
+  }
+
+  refreshBtn.addEventListener('click', loadMetrics);
+  loadMetrics();
+})();
+</script>
+{% endblock %}

@@ -3,7 +3,7 @@
 {% block content %}
 <div class="detector-shell" data-detector-mode="{{ detector_mode }}">
     <h3>{{ detector_title }}</h3>
-    <p class="detector-subtitle">Browser camera mode for cloud deployment compatibility.</p>
+    <p class="detector-subtitle">Browser camera inference with configurable model profiles and live metrics.</p>
 
     <div class="detector-controls">
         <button type="button" data-action="start">Start Camera</button>
@@ -19,7 +19,17 @@
             <input type="range" data-role="fps" min="2" max="15" step="1" value="6">
         </label>
 
+        <label>
+            Model
+            <select data-role="profile">
+                {% for profile in detector_profiles %}
+                <option value="{{ profile }}" {% if profile == detector_default_profile %}selected{% endif %}>{{ profile|capitalize }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
         <span data-role="fps-value">6 fps</span>
+        <a class="benchmark-link" href="{{ url_for('benchmark_page') }}">Open Benchmark</a>
     </div>
 
     <div class="detector-stage">
@@ -32,6 +42,8 @@
         <span data-role="latency"></span>
         <span data-role="meta"></span>
     </div>
+
+    <div class="detector-server-metrics" data-role="server-metrics"></div>
 </div>
 
 <script src="{{ url_for('static', filename='js/browser_detection.js') }}"></script>
