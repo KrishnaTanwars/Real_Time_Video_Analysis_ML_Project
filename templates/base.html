@@ -15,7 +15,6 @@
       <li><a href="#Hero">Home</a></li>
       <li><a href="#features">Features</a></li>
       <li><a href="#About">About</a></li>
-      <li><a href="{{ url_for('benchmark_page') }}">Benchmark</a></li>
       <li>
         <button id="theme-toggle" class="toggle-btn">Dark Mode</button>
       </li>
@@ -95,64 +94,36 @@
     <br>
     <div class="features-container">
       
+<div class="feature-card">
+          <img src="{{ url_for('static', filename='assets/krishna.jpg')}}" alt="Object Detection">
+          <h3 style="color: white;">Krishna</h3>
+          <br>
+          <h5>AI System Architect</h5>
+          <h5>Deployment Engineer</h5>
+        </div>
+
       <div class="feature-card">
-        <img src="{{ url_for('static', filename='assets/adi_bhai.png')}}" alt="Object Detection">
+        <img src="{{ url_for('static', filename='assets/aditya.jpg')}}" alt="Object Detection">
         <h3 style="color: white;">Aditya Varshney</h3>
         <br>
-        <h5>Flask Integration / UI</h5>
-        <h5>Backend / Frontend</h5>
+        <h5>Full Stack</h5>
+        <h5>Integration Engineer</h5>
 
       </div>
     
         <div class="feature-card">
-          <img src="{{ url_for('static', filename='assets/alok_bhai.jpg')}}" alt="Object Detection">
+          <img src="{{ url_for('static', filename='assets/alok.jpg')}}" alt="Object Detection">
           <h3 style="color: white;">Alok Bhadauria</h3>
           <br>
-        <h5>Python Scripting</h5>
-        <h5>Model Evaluation</h5>
-        <h5>Backend</h5>
+        <h5>Machine Learning</h5>
+        <h5>Engineer</h5>
         </div>
        
-        <div class="feature-card">
-          <img src="{{ url_for('static', filename='assets/divyaraj.png')}}" alt="Object Detection">
-          <h3 style="color: white;">Divya Raj</h3>
-          <br>
-        <h5>UI / Model Evaluation</h5>
-        <h5>Styling</h5>
-        </div>
-
-        <div class="feature-card">
-          <img src="{{ url_for('static', filename='assets/Krishna_bhai.png')}}" alt="Object Detection">
-          <h3 style="color: white;">Krishna</h3>
-          <br>
-          <h5>UI / Deployment</h5>
-          <h5>Frontend</h5>
-        </div>
-
-
-        <div class="feature-card">
-          <img src="{{ url_for('static', filename='assets/ayaan.png')}}" alt="Object Detection">
-          <h3 style="color: white;">Md. Ayaan Hussain</h3>
-          <br>
-          <h5>Model Training</h5>
-          <h5>Research & Development</h5>
-        </div>
         
-        <div class="feature-card">
-          <img src="{{ url_for('static', filename='assets/priya.png')}}" alt="Object Detection">
-          <h3 style="color: white;">Priya</h3> 
-          <br>
-          <h5>Team Coordination</h5>
-          <h5>Management</h5>
-        </div>
 
-        <div class="feature-card">
-          <img src="{{ url_for('static', filename='assets/adeeb_bhai.png')}}" alt="Object Detection">
-          <h3 style="color: white;">Syed Adeeb Hussain</h3>
-          <br>
-          <h5>Model Training</h5>
-          <h5>Research & Development</h5>
-        </div>
+        
+
+        
 
         <br>
         <br>
@@ -168,7 +139,7 @@
   </section>
   <!-- Footer -->
   <footer>
-    <p>&copy; 2024 Data Divers. All rights reserved.</p>
+    <p>&copy; 2026 Data Divers. All rights reserved.</p>
   </footer>
 
   <script src="{{url_for('static', filename='js/script.js')}}"></script>
