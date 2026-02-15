@@ -1,8 +1,6 @@
 ﻿(function () {
   const root = document.querySelector("[data-detector-mode]");
-  if (!root) {
-    return;
-  }
+  if (!root) return;
 
   const mode = root.dataset.detectorMode;
   const video = root.querySelector('[data-role="video"]');
@@ -19,16 +17,17 @@
   const statusEl = root.querySelector('[data-role="status"]');
   const latencyEl = root.querySelector('[data-role="latency"]');
   const metaEl = root.querySelector('[data-role="meta"]');
-  const serverMetricsEl = root.querySelector('[data-role="server-metrics"]');
 
   const captureCanvas = document.createElement("canvas");
   const captureCtx = captureCanvas.getContext("2d");
 
+  // 🔥 FIXED SMALL RESOLUTION
+  captureCanvas.width = 416;
+  captureCanvas.height = 416;
+
   const outputImage = new Image();
   outputImage.onload = function () {
-    if (!outputImage.width || !outputImage.height) {
-      return;
-    }
+    if (!outputImage.width || !outputImage.height) return;
 
     if (canvas.width !== outputImage.width || canvas.height !== outputImage.height) {
       canvas.width = outputImage.width;
@@ -38,202 +37,96 @@
     ctx.drawImage(outputImage, 0, 0, canvas.width, canvas.height);
   };
 
-  const clientId = ensureClientId();
+  const clientId = localStorage.getItem("detector_client_id") ||
+    `client_${Math.random().toString(36).slice(2)}_${Date.now()}`;
+
+  localStorage.setItem("detector_client_id", clientId);
 
   let stream = null;
   let timerId = null;
   let inFlight = false;
-  let currentFps = Number(fpsInput.value || 6);
-  let consecutiveFailures = 0;
-  let metricsTimerId = null;
-
-  function ensureClientId() {
-    const key = "detector_client_id";
-    const existing = window.localStorage.getItem(key);
-    if (existing) {
-      return existing;
-    }
-
-    const generated = `client_${Math.random().toString(36).slice(2)}_${Date.now()}`;
-    window.localStorage.setItem(key, generated);
-    return generated;
-  }
+  let currentFps = Math.min(8, Number(fpsInput.value || 4));
 
   function setStatus(text) {
     statusEl.textContent = text;
-  }
-
-  function updateMeta(meta) {
-    if (!meta || typeof meta !== "object") {
-      metaEl.textContent = "";
-      return;
-    }
-
-    const entries = Object.entries(meta).filter(([_, value]) => value !== null && value !== undefined);
-    metaEl.textContent = entries.map(([k, v]) => `${k}: ${v}`).join(" | ");
   }
 
   function applyButtonState(running) {
     startButton.disabled = running;
     stopButton.disabled = !running;
     cameraSelect.disabled = running;
-    if (profileSelect) {
-      profileSelect.disabled = running;
-    }
-  }
-
-  async function refreshServerMetrics() {
-    if (!serverMetricsEl) {
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/metrics");
-      const payload = await response.json();
-      if (!response.ok || !payload.ok) {
-        return;
-      }
-
-      const modeMetrics = payload.metrics?.modes?.[mode];
-      if (!modeMetrics) {
-        return;
-      }
-
-      serverMetricsEl.textContent = `Server stats -> requests: ${modeMetrics.requests}, avg latency: ${modeMetrics.avg_latency_ms} ms, errors: ${modeMetrics.errors}`;
-    } catch (error) {
-      serverMetricsEl.textContent = "";
-    }
-  }
-
-  async function listCameras() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      return;
-    }
-
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const cameras = devices.filter((device) => device.kind === "videoinput");
-
-    cameraSelect.innerHTML = "";
-
-    cameras.forEach((camera, index) => {
-      const option = document.createElement("option");
-      option.value = camera.deviceId;
-      option.textContent = camera.label || `Camera ${index + 1}`;
-      cameraSelect.appendChild(option);
-    });
-
-    if (!cameras.length) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No camera found";
-      cameraSelect.appendChild(option);
-      cameraSelect.disabled = true;
-    }
+    if (profileSelect) profileSelect.disabled = running;
   }
 
   function buildConstraints() {
-    const selected = cameraSelect.value;
-    if (selected) {
-      return {
-        audio: false,
-        video: {
-          deviceId: { exact: selected },
-          width: { ideal: 960 },
-          height: { ideal: 540 },
-        },
-      };
-    }
-
     return {
       audio: false,
       video: {
         facingMode: "user",
-        width: { ideal: 960 },
-        height: { ideal: 540 },
+        width: { ideal: 640 },
+        height: { ideal: 480 },
       },
     };
   }
 
   function stopLoop() {
     if (timerId) {
-      window.clearInterval(timerId);
+      clearInterval(timerId);
       timerId = null;
     }
   }
 
   function startLoop() {
     stopLoop();
-
-    const intervalMs = Math.max(1000 / currentFps, 80);
-    timerId = window.setInterval(processFrame, intervalMs);
+    const intervalMs = Math.max(1000 / currentFps, 120);
+    timerId = setInterval(processFrame, intervalMs);
   }
 
   function stopCamera() {
     stopLoop();
-
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
       stream = null;
     }
-
     video.srcObject = null;
-    inFlight = false;
     applyButtonState(false);
     setStatus("Camera stopped");
-
-    if (metricsTimerId) {
-      window.clearInterval(metricsTimerId);
-      metricsTimerId = null;
-    }
   }
 
   async function startCamera() {
     try {
       stopCamera();
-      setStatus("Requesting camera access...");
+      setStatus("Starting camera...");
 
       stream = await navigator.mediaDevices.getUserMedia(buildConstraints());
       video.srcObject = stream;
       await video.play();
 
-      captureCanvas.width = video.videoWidth || 960;
-      captureCanvas.height = video.videoHeight || 540;
-
       applyButtonState(true);
       setStatus("Camera running");
-      consecutiveFailures = 0;
       startLoop();
-      refreshServerMetrics();
-      metricsTimerId = window.setInterval(refreshServerMetrics, 4000);
-
-      await listCameras();
     } catch (error) {
-      setStatus(`Camera error: ${error.message || error}`);
-      stopCamera();
+      setStatus(`Camera error: ${error.message}`);
     }
   }
 
   async function processFrame() {
-    if (!stream || inFlight) {
-      return;
-    }
-
-    if (!video.videoWidth || !video.videoHeight) {
-      return;
-    }
+    if (!stream || inFlight) return;
+    if (!video.videoWidth) return;
 
     inFlight = true;
 
     try {
-      captureCtx.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height);
-      const frameDataUrl = captureCanvas.toDataURL("image/jpeg", 0.72);
+      captureCtx.drawImage(video, 0, 0, 416, 416);
 
-      const startedAt = performance.now();
+      // 🔥 LOWER JPEG QUALITY
+      const frameDataUrl = captureCanvas.toDataURL("image/jpeg", 0.55);
+
+      const startTime = performance.now();
+
       const response = await fetch(`/api/detect/${mode}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_id: clientId,
           profile: profileSelect ? profileSelect.value : "balanced",
@@ -241,8 +134,8 @@
         }),
       });
 
-      const elapsed = Math.round(performance.now() - startedAt);
-      latencyEl.textContent = `Latency: ${elapsed} ms`;
+      const latency = Math.round(performance.now() - startTime);
+      latencyEl.textContent = `Latency: ${latency} ms`;
 
       const payload = await response.json();
       if (!response.ok || !payload.ok) {
@@ -250,50 +143,27 @@
       }
 
       outputImage.src = payload.image;
-      updateMeta(payload.meta);
-      setStatus("Processing live frames");
-      consecutiveFailures = 0;
-    } catch (error) {
-      consecutiveFailures += 1;
-      setStatus(`Detection error: ${error.message || error}`);
+      metaEl.textContent = Object.entries(payload.meta || {})
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(" | ");
 
-      if (consecutiveFailures >= 5) {
-        stopCamera();
-      }
+      setStatus("Processing live frames");
+    } catch (error) {
+      setStatus(`Detection error: ${error.message}`);
     } finally {
       inFlight = false;
     }
   }
 
   function updateFps() {
-    const nextFps = Number(fpsInput.value || 6);
-    currentFps = Math.min(15, Math.max(2, nextFps));
+    currentFps = Math.min(8, Math.max(2, Number(fpsInput.value || 4)));
     fpsValue.textContent = `${currentFps} fps`;
-
-    if (stream) {
-      startLoop();
-    }
+    if (stream) startLoop();
   }
 
   startButton.addEventListener("click", startCamera);
   stopButton.addEventListener("click", stopCamera);
-
-  cameraSelect.addEventListener("change", function () {
-    if (stream) {
-      startCamera();
-    }
-  });
-
   fpsInput.addEventListener("input", updateFps);
 
-  if (profileSelect) {
-    profileSelect.addEventListener("change", function () {
-      setStatus(`Model profile: ${profileSelect.value}`);
-    });
-  }
-
-  window.addEventListener("beforeunload", stopCamera);
-
   updateFps();
-  listCameras().then(startCamera).catch((error) => setStatus(`Init error: ${error.message || error}`));
 })();
